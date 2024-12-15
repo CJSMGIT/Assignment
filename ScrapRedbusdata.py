@@ -305,7 +305,8 @@ class redbus:
                 host="localhost",
                 user="root",
                 password="root",
-                database="RED_BUS_DATA"
+                database="RED_BUS_DATA",
+                charset='utf8mb4'
             )
             
             # Create a cursor object
@@ -325,12 +326,12 @@ class redbus:
             create_govt_bus_table = """
                 CREATE TABLE IF NOT EXISTS redbus_govt_bus (
                     region VARCHAR(255),
-                    government_bus_name VARCHAR(255),
+                    government_bus_name VARCHAR(255) UNIQUE,
                     links VARCHAR(255)
                 )
             """
             mycursor.execute(create_govt_bus_table)
-            with open(file_name, mode='w', newline='') as file:
+            with open(file_name, mode='w', newline='', encoding='utf-8') as file:
                 writer = csv.writer(file)
                 # Prepare and insert government bus details in batches
                 writer.writerow(['Region Name', 'Bus Name', 'Government Bus Link'])
@@ -341,7 +342,7 @@ class redbus:
                 
                 for i in range(0, len(govt_bus_data), batch_size):
                     batch = govt_bus_data[i:i+batch_size]
-                    mycursor.executemany("INSERT INTO redbus_govt_bus (region, government_bus_name, links) VALUES (%s, %s, %s)", batch)
+                    mycursor.executemany("INSERT IGNORE INTO redbus_govt_bus (region, government_bus_name, links) VALUES (%s, %s, %s)", batch)
                 
                     mydb.commit()
                     writer.writerows(batch)
@@ -355,13 +356,13 @@ class redbus:
             create_route_details = """
                 CREATE TABLE IF NOT EXISTS redbus_route_details (
                     government_bus_name VARCHAR(255),
-                    route_title VARCHAR(255),
+                    route_title VARCHAR(255) UNIQUE,
                     bus_fare_starts_from INT,
                     route_link VARCHAR(255)
                 )
             """
             mycursor.execute(create_route_details)
-            with open(file_name1, mode='w', newline='') as file1:
+            with open(file_name1, mode='w', newline='', encoding='utf-8') as file1:
                 writer = csv.writer(file1)
                 # Prepare and insert route data in batches
                 writer.writerow(['Government Bus Name', 'Route Title', 'Fare', 'Route Link'])
@@ -372,7 +373,7 @@ class redbus:
                 
                 for i in range(0, len(route_data), batch_size):
                     batch = route_data[i:i + batch_size]
-                    sql2 = "INSERT INTO redbus_route_details (government_bus_name, route_title, bus_fare_starts_from, route_link) VALUES (%s, %s, %s, %s)"
+                    sql2 = "INSERT IGNORE INTO redbus_route_details (government_bus_name, route_title, bus_fare_starts_from, route_link) VALUES (%s, %s, %s, %s)"
                     mycursor.executemany(sql2, batch)
                     mydb.commit()  # Commit each batch
                     writer.writerows(batch)
@@ -403,7 +404,7 @@ class redbus:
 
             # File to store bus details
             file_name2 = 'busdetails.csv'
-            with open(file_name2, mode='w', newline='') as file2:
+            with open(file_name2, mode='w', newline='', encoding='utf-8') as file2:
                 writer = csv.writer(file2)
                 # Write header (Optional, depending on structure)
                 writer.writerow(['Bus ID', 'Route Title', 'Route Link', 'Travel Name', 'Coach', 'Start Time', 'Start Bus Stand', 
