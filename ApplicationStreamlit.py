@@ -74,28 +74,39 @@ st.markdown("""
             margin-top: 20px;
             border: 1px solid #D1D1D1;
             border-radius: 8px;
-            
-            
+            padding: 10px;
         }
 
-        .stCheckbox {
-            color: #555555;
+        .stSelectbox select {
+            background-color: #F4F4F4;
+            border: 1px solid #D1D1D1;
+            border-radius: 4px;
+            padding: 8px 10px;
         }
         
-        .sidebar-content {
-            background-color: #e81e1e;
-            color: white;
-            padding-top: 20px;
-        }
-
-        .stSidebar .sidebar-content {
-            background-color: #fcfafa;
-            color: white;
-        }
-        
+        /* Set a fixed width for the sidebar */
         .stSidebar {
+            width: 250px;
+            position: fixed;
             background-color: #fcfafa;
-            color: white;
+        }
+
+        /* Sidebar content height and overflow handling */
+        .stSidebar .sidebar-content {
+            min-height: 100vh;
+            padding-top: 20px;
+            overflow-y: auto;
+            transition: none !important;  /* Disable transition animations */
+        }
+
+        /* Prevent elements inside the sidebar from shifting */
+        .stSidebar .sidebar-content img {
+            max-width: 100%;
+        }
+
+        /* Fixed background in the sidebar */
+        .stSidebar {
+            background-attachment: fixed;
         }
 
         .stButton button {
@@ -110,6 +121,7 @@ st.markdown("""
         .stButton button:hover {
             background-color: #0056b3;
         }
+
         
     </style>
 """, unsafe_allow_html=True)
@@ -119,7 +131,7 @@ data = "https://i.pinimg.com/564x/04/6b/38/046b3884bbd9d16ba053a80c95b8f295.jpg"
 # Sidebar menu and image
 with st.sidebar:
     selected = option_menu(
-        menu_title=None,
+        menu_title="Main Menu",
         options=['Home', 'Government Buses', 'Route Details', 'Search Bus'],
         icons=['house-door-fill', 'truck-front-fill', 'database', 'search'],
         default_index=0,
@@ -127,7 +139,8 @@ with st.sidebar:
             "container": {'padding': '10px', 'background-color': '#ed3b3b'},
             "icon": {'color': "#FFFFFF", "font-size": "24px"},
             "nav-link": {'font-size': '18px', 'text-align': 'left', 'margin': '0px', '--hover-color': '#f57878', 'font-weight': 'bold', 'color': 'white'},
-            "nav-link-selector": {'background-color': '#ed3b3b', 'font-weight': 'bold'}
+            "nav-link-selector": {'background-color': '#ed3b3b', 'font-weight': 'bold'},
+
         }
     )
 
@@ -227,7 +240,7 @@ elif selected == "Search Bus":
 
     # Add checkboxes for filtering rows
     for index, row in data10.iterrows():
-        if st.checkbox(f"bus id {row['bus_id']}: route title {row['route_title']}", key=row['bus_id']):
+        if st.checkbox(f"travel name {row['travel_name']}: seats left {row['seats_left']}", key=row['bus_id']):
             selected_rows.append(row)
 
     # Display the filtered data
